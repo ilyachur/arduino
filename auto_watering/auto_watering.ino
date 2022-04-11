@@ -27,6 +27,16 @@ public:
         m_led_state = not(m_led_state);
         digitalWrite(m_led, m_led_state);
     }
+    void update(const Event& event) {
+        if (event.to != type_info())
+            return;
+        auto it_t = event.args.find("type");
+        auto it_n = event.args.find("val");
+        if (it_t != event.args.end() && it_t->second == "led_timeout" && it_n != event.args.end()) {
+            String value = it_n->second.c_str();
+            set_interval(value.toInt());
+        }
+    }
     void end() override {}
 };
 
@@ -90,9 +100,16 @@ void setup() {
                     String from_name = message.from_name;
                     String welcome = "Welcome, " + from_name + ".\n";
                     welcome += "Use the following commands to control your outputs.\n\n";
+                    welcome += "/led_timeout N Led timeout in ms";
                     Event event{TelegramManager::static_type_info(),
                                 TelegramManager::static_type_info(),
                                 {{"type", "send"}, {"chat_id", message.chat_id.c_str()}, {"message", welcome.c_str()}}};
+                    TaskManager::get_instance().notify(event);
+                } else if (message.text.startsWith("/led_timeout")) {
+                    Event event{TelegramManager::static_type_info(),
+                                Led::static_type_info(),
+                                {{"type", "led_timeout"},
+                                 {"val", message.text.substring(message.text.indexOf(" ") + 1).c_str()}}};
                     TaskManager::get_instance().notify(event);
                 }
             })
