@@ -13,6 +13,7 @@ private:
     bool init();
 
 public:
+    TASK_ID("OTAManager");
     class Arguments {
     private:
         std::string m_hostname;
@@ -85,8 +86,5 @@ public:
     void start() override;
     void process() override;
     void end() override;
-    const char* name() const override;
-
-    void set_update_interval(uint64_t interval);
 };
 

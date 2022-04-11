@@ -3,22 +3,34 @@
 
 #include <manager.hpp>
 #include <ota.hpp>
+#include <task.hpp>
 #include <telegram.hpp>
 #include <wifi.hpp>
 
 #include "utils/private_constants.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();
-//переменные для мигания светодиодом через millis
 
-const int led = 2;
-unsigned long previousMillis = 0;
-const long interval = 5000;
-int ledState = LOW;
+class Led : public ScheduledTaskImpl {
+private:
+    const int m_led;
+    int m_led_state;
+
+public:
+    TASK_ID("Led");
+    Led(int led, int state, uint64_t interval) : ScheduledTaskImpl(interval), m_led(led), m_led_state(state) {
+        pinMode(led, OUTPUT);
+    }
+
+    void start() override {}
+    void process() override {
+        m_led_state = not(m_led_state);
+        digitalWrite(m_led, m_led_state);
+    }
+    void end() override {}
+};
 
 void setup() {
-    pinMode(led, OUTPUT);
-
     task_manager.set_debug(true);
 
     Serial.begin(115200);
@@ -67,19 +79,46 @@ void setup() {
                                  task_manager.is_debug()));
 
     // Init telegram bot
-    task_manager.register_task(
-        Task::create<TelegramManager>(bot_tocken, authorized_users, 1000, task_manager.is_debug()));
+    task_manager.register_task(Task::create<TelegramManager>(
+        TelegramManager::Arguments()
+            .set_bot_tocken(bot_tocken)
+            .set_authorized_users(authorized_users)
+            .set_read_callback([&](const telegramMessage& message) {
+                if (task_manager.is_debug())
+                    TaskManager::get_instance().log(message.text);
+                if (message.text == "/start") {
+                    String from_name = message.from_name;
+                    String welcome = "Welcome, " + from_name + ".\n";
+                    welcome += "Use the following commands to control your outputs.\n\n";
+                    Event event{TelegramManager::static_type_info(),
+                                TelegramManager::static_type_info(),
+                                {{"type", "send"}, {"chat_id", message.chat_id.c_str()}, {"message", welcome.c_str()}}};
+                    TaskManager::get_instance().notify(event);
+                }
+            })
+            .set_on_update([](UniversalTelegramBot& bot, const Event& event) {
+                if (task_manager.is_debug()) {
+                    TaskManager::get_instance().log(event.to.c_str());
+                    TaskManager::get_instance().log(event.from.c_str());
+                }
+                if (event.to != TelegramManager::static_type_info())
+                    return;
+                if (event.args.find("type") == event.args.end())
+                    return;
+                if (event.args.at("type") == "send" && event.args.find("chat_id") != event.args.end() &&
+                    event.args.find("message") != event.args.end()) {
+                    bot.sendMessage(event.args.at("chat_id").c_str(), event.args.at("message").c_str(), "");
+                }
+            }),
+        1000,
+        task_manager.is_debug()));
+
+    // Control led on the board
+    task_manager.register_task(Task::create<Led>(2, LOW, 5000));
 
     Serial.println("Ready");
 }
 
 void loop() {
     task_manager.execute();
-
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
-        ledState = not(ledState);
-        digitalWrite(led, ledState);
-    }
 }

@@ -3,6 +3,17 @@
 #include <memory>
 #include <string>
 
+#include "event.hpp"
+
+#define TASK_ID(ID)                              \
+    static const char* static_type_info() {      \
+        static constexpr char* name = (char*)ID; \
+        return name;                             \
+    }                                            \
+    const char* type_info() const override {     \
+        return static_type_info();               \
+    }
+
 class TaskImpl {
 protected:
     bool in_progress;
@@ -15,10 +26,11 @@ public:
     virtual bool execute() = 0;
     virtual bool is_finished() = 0;
 
-    virtual void start() = 0;
+    virtual void start() {}
     virtual void process() = 0;
-    virtual void end() = 0;
-    virtual const char* name() const = 0;
+    virtual void end() {}
+    virtual const char* type_info() const = 0;
+    virtual void update(const Event& event) {}
 
     virtual bool is_debug() const;
     virtual void set_debug(bool enable);
@@ -48,8 +60,8 @@ public:
     void end() {
         impl->end();
     }
-    const char* name() const {
-        return impl->name();
+    const char* type_info() const {
+        return impl->type_info();
     }
 
     bool is_debug() const {
@@ -58,6 +70,10 @@ public:
     void set_debug(bool enable) {
         return impl->set_debug(enable);
     }
+    void update(const Event& event) {
+        impl->update(event);
+    }
+
     template <class T, class... Args>
     static Task create(Args... args) {
         return Task(std::make_shared<T>(args...));
@@ -76,6 +92,10 @@ public:
     ScheduledTaskImpl(uint64_t interval, uint64_t duration = 0);
     bool execute() override;
     bool is_finished() override;
+
+    void set_interval(uint64_t inter) {
+        interval = inter;
+    }
 };
 
 /**

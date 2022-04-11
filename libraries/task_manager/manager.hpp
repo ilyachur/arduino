@@ -36,5 +36,6 @@ public:
     void log(String message = "", bool withoutNewLine = false);
     void log(const Task& task, String message = "", bool withoutNewLine = false);
     void log(const TaskImpl* task, String message = "", bool withoutNewLine = false);
+    void notify(const Event& event);
 };
 

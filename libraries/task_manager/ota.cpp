@@ -54,9 +54,3 @@ void OTAManager::process() {
     ArduinoOTA.handle();
 }
 void OTAManager::end() {}
-
-const char* OTAManager::name() const {
-    static constexpr char* name = (char*)"OTAManager";
-    return name;
-}
-

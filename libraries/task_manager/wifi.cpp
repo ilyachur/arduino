@@ -12,8 +12,6 @@ WifiManager::WifiManager(const std::string& ssid, const std::string& pass, uint6
     WiFi.begin(ssid.c_str(), pass.c_str());
 }
 
-void WifiManager::start() {}
-
 void WifiManager::process() {
     wl_status_t newStatus = WiFi.status();
 
@@ -55,10 +53,3 @@ void WifiManager::process() {
 
     wifiStatus = newStatus;
 }
-void WifiManager::end() {}
-
-const char* WifiManager::name() const {
-    static constexpr char* name = (char*)"WifiManager";
-    return name;
-}
-

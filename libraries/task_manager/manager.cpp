@@ -48,7 +48,7 @@ void TaskManager::log(String message, bool withoutNewLine) {
 void TaskManager::log(const Task& task, String message, bool withoutNewLine) {
     if (task.is_debug()) {
         String finalMessage = "[";
-        finalMessage += String(task.name());
+        finalMessage += String(task.type_info());
         finalMessage += "] ";
         finalMessage += message;
         if (withoutNewLine)
@@ -61,7 +61,7 @@ void TaskManager::log(const Task& task, String message, bool withoutNewLine) {
 void TaskManager::log(const TaskImpl* task, String message, bool withoutNewLine) {
     if (task->is_debug()) {
         String finalMessage = "[";
-        finalMessage += String(task->name());
+        finalMessage += String(task->type_info());
         finalMessage += "] ";
         finalMessage += message;
         if (withoutNewLine)
@@ -71,3 +71,9 @@ void TaskManager::log(const TaskImpl* task, String message, bool withoutNewLine)
     }
 }
 
+void TaskManager::notify(const Event& event) {
+    for (auto&& task : tasks) {
+        if (event.to.empty() || event.to == task.type_info())
+            task.update(event);
+    }
+}

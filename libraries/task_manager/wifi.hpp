@@ -10,11 +10,7 @@ private:
     wl_status_t wifiStatus;
 
 public:
+    TASK_ID("WifiManager");
     WifiManager(const std::string& ssid, const std::string& pass, uint64_t interval = 1000, bool debug = false);
-    void start() override;
     void process() override;
-    void end() override;
-    const char* name() const override;
-
-    void set_update_interval(uint64_t interval);
 };
