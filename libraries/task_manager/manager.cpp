@@ -2,7 +2,7 @@
 
 std::unique_ptr<TaskManager> TaskManager::manager;
 
-TaskManager::TaskManager(): debug(false) {}
+TaskManager::TaskManager() : debug(false) {}
 
 TaskManager& TaskManager::get_instance() {
     if (!manager) {

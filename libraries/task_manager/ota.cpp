@@ -1,6 +1,7 @@
 #include "ota.hpp"
-#include "wifi.hpp"
+
 #include "manager.hpp"
+#include "wifi.hpp"
 
 bool OTAManager::init() {
     auto w_status = WiFi.status();
@@ -15,11 +16,11 @@ bool OTAManager::init() {
     }
     return m_initialized;
 }
-OTAManager::OTAManager(const Arguments& args, uint64_t interval, bool debug): ScheduledTaskImpl(interval) {
+OTAManager::OTAManager(const Arguments& args, uint64_t interval, bool debug) : ScheduledTaskImpl(interval) {
     set_debug(debug);
     // Port defaults to 8266
     if (args.m_port > 0)
-       ArduinoOTA.setPort(args.m_port);
+        ArduinoOTA.setPort(args.m_port);
 
     // Hostname defaults to esp8266-[ChipID]
     if (!args.m_hostname.empty())

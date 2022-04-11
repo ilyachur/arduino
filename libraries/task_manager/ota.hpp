@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ArduinoOTA.h>
+
 #include <functional>
 
 #include "task.hpp"
@@ -10,6 +11,7 @@ private:
     bool m_initialized;
 
     bool init();
+
 public:
     class Arguments {
     private:
@@ -25,6 +27,7 @@ public:
         std::function<void(ota_error_t)> m_on_error;
 
         friend OTAManager;
+
     public:
         Arguments() = default;
 

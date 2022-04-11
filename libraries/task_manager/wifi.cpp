@@ -1,9 +1,11 @@
 #include "wifi.hpp"
 
-#include "task.hpp"
 #include "manager.hpp"
+#include "task.hpp"
 
-WifiManager::WifiManager(const std::string& ssid, const std::string& pass, uint64_t interval, bool debug): ScheduledTaskImpl(interval), wifiStatus(WL_NO_SHIELD) {
+WifiManager::WifiManager(const std::string& ssid, const std::string& pass, uint64_t interval, bool debug)
+    : ScheduledTaskImpl(interval),
+      wifiStatus(WL_NO_SHIELD) {
     set_debug(debug);
     TaskManager::get_instance().log(this, "Connecting to SSID: " + String(ssid.c_str()));
     WiFi.mode(WIFI_STA);

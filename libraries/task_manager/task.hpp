@@ -26,7 +26,7 @@ public:
 
 class Task {
     std::shared_ptr<TaskImpl> impl;
-    Task(const std::shared_ptr<TaskImpl>& implementation): impl(implementation) {}
+    Task(const std::shared_ptr<TaskImpl>& implementation) : impl(implementation) {}
 
 public:
     bool execute() {
@@ -58,9 +58,9 @@ public:
     void set_debug(bool enable) {
         return impl->set_debug(enable);
     }
-    template <class T, class ... Args>
-    static Task create(Args ... args) {
-      return Task(std::make_shared<T>(args ...));
+    template <class T, class... Args>
+    static Task create(Args... args) {
+        return Task(std::make_shared<T>(args...));
     }
 };
 

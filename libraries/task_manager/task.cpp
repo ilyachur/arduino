@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-TaskImpl::TaskImpl(): in_progress(false), last_time(-1), debug(false) {}
+TaskImpl::TaskImpl() : in_progress(false), last_time(-1), debug(false) {}
 TaskImpl::~TaskImpl() {}
 
 bool TaskImpl::is_debug() const {
@@ -12,7 +12,7 @@ void TaskImpl::set_debug(bool enable) {
     debug = enable;
 }
 
-ScheduledTaskImpl::ScheduledTaskImpl(uint64_t interval, uint64_t duration): duration(duration), interval(interval) {}
+ScheduledTaskImpl::ScheduledTaskImpl(uint64_t interval, uint64_t duration) : duration(duration), interval(interval) {}
 
 bool ScheduledTaskImpl::execute() {
     uint64_t current_time = millis();
@@ -26,7 +26,8 @@ bool ScheduledTaskImpl::execute() {
         end();
         return true;
     }
-    if (current_time - last_time < interval && current_time >= last_time) return false;
+    if (current_time - last_time < interval && current_time >= last_time)
+        return false;
     in_progress = true;
     start();
     process();
@@ -36,7 +37,7 @@ bool ScheduledTaskImpl::is_finished() {
     return false;
 }
 
-UniqueTaskImpl::UniqueTaskImpl(uint64_t duration): duration(duration) {}
+UniqueTaskImpl::UniqueTaskImpl(uint64_t duration) : duration(duration) {}
 
 bool UniqueTaskImpl::execute() {
     uint64_t current_time = millis();
