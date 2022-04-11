@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Preferences.h>
 #include <Wifi.h>
 
 #include "task.hpp"
@@ -9,8 +8,6 @@ class WifiManager : public ScheduledTaskImpl {
 private:
     // Wifi status
     wl_status_t wifiStatus;
-    // Store all information about commands
-    Preferences preferences;
 
 public:
     WifiManager(const std::string& ssid, const std::string& pass, uint64_t interval = 1000, bool debug = false);

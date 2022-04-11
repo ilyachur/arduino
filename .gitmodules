@@ -1,0 +1,6 @@
+[submodule "libraries/Universal-Arduino-Telegram-Bot"]
+	path = libraries/Universal-Arduino-Telegram-Bot
+	url = https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot/
+[submodule "libraries/ArduinoJson"]
+	path = libraries/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson

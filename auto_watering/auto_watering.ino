@@ -3,6 +3,7 @@
 
 #include <manager.hpp>
 #include <ota.hpp>
+#include <telegram.hpp>
 #include <wifi.hpp>
 
 #include "utils/private_constants.hpp"
@@ -22,7 +23,7 @@ void setup() {
 
     Serial.begin(115200);
     while (!Serial) {
-    };
+    }
     delay(100);
     Serial.flush();
 
@@ -64,6 +65,10 @@ void setup() {
                                      }),
                                  1,
                                  task_manager.is_debug()));
+
+    // Init telegram bot
+    task_manager.register_task(
+        Task::create<TelegramManager>(bot_tocken, authorized_users, 1000, task_manager.is_debug()));
 
     Serial.println("Ready");
 }
