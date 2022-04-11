@@ -1,0 +1,6 @@
+.DS_Store
+build
+**/private_constants.hpp
+tags
+cmake-build-*/
+compile_commands.json
