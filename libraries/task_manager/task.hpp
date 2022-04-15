@@ -80,6 +80,18 @@ public:
     }
 };
 
+class ServiceTaskImpl : public TaskImpl {
+public:
+    ServiceTaskImpl() = default;
+    bool is_finished() override {
+        return false;
+    }
+    void process() override {}
+    bool execute() override {
+        return false;
+    }
+};
+
 /**
  * Scheduled task, like WifiManager or EmailManager
  */

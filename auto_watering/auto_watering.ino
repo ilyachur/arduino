@@ -1,6 +1,7 @@
 #include <ArduinoOTA.h>
 #include <ESPmDNS.h>
 
+#include <lcd.hpp>
 #include <manager.hpp>
 #include <ota.hpp>
 #include <task.hpp>
@@ -49,7 +50,15 @@ void setup() {
     delay(100);
     Serial.flush();
 
-    Serial.println("Booting");
+    task_manager.log("Booting");
+    // LCD handler. Signals: [ RS, EN, D4, D5, D6, D7 ], w and h
+    task_manager.register_task(Task::create<LCDManager>(13, 12, 14, 27, 26, 25, 16, 2, task_manager.is_debug()));
+
+    {
+        // clear LCD
+        Event event{"Main", LCDManager::static_type_info(), {{"type", "clear"}}};
+        task_manager.notify(event);
+    }
     task_manager.register_task(Task::create<WifiManager>(ssid, password, 1000, task_manager.is_debug()));
     // Doesn't work with Arduino IDE 2.0
     task_manager.register_task(
@@ -114,10 +123,8 @@ void setup() {
                 }
             })
             .set_on_update([](UniversalTelegramBot& bot, const Event& event) {
-                if (task_manager.is_debug()) {
-                    TaskManager::get_instance().log(event.to.c_str());
-                    TaskManager::get_instance().log(event.from.c_str());
-                }
+                TaskManager::get_instance().log(event.to.c_str());
+                TaskManager::get_instance().log(event.from.c_str());
                 if (event.to != TelegramManager::static_type_info())
                     return;
                 if (event.args.find("type") == event.args.end())
@@ -133,7 +140,14 @@ void setup() {
     // Control led on the board
     task_manager.register_task(Task::create<Led>(2, LOW, 5000));
 
-    Serial.println("Ready");
+    task_manager.log("Ready");
+    {
+        // print
+        Event event{"Main",
+                    LCDManager::static_type_info(),
+                    {{"type", "print"}, {"col", "0"}, {"row", "0"}, {"text", "Ready"}}};
+        task_manager.notify(event);
+    }
 }
 
 void loop() {

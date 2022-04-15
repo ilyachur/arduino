@@ -1,5 +1,6 @@
 #include "wifi.hpp"
 
+#include "lcd.hpp"
 #include "manager.hpp"
 #include "task.hpp"
 
@@ -19,9 +20,33 @@ void WifiManager::process() {
         switch (WiFi.status()) {
         case WL_CONNECTED:
             TaskManager::get_instance().log(this, "Wifi connected", false);
+            {
+                // clear
+                Event event{type_info(), LCDManager::static_type_info(), {{"type", "clear"}}};
+                TaskManager::get_instance().notify(event);
+            }
+            {
+                // print
+                Event event{type_info(),
+                            LCDManager::static_type_info(),
+                            {{"type", "print"}, {"col", "0"}, {"row", "0"}, {"text", "Wifi connected!"}}};
+                TaskManager::get_instance().notify(event);
+            }
             break;
         case WL_DISCONNECTED:
             TaskManager::get_instance().log(this, "Wifi disconnected", false);
+            {
+                // clear
+                Event event{type_info(), LCDManager::static_type_info(), {{"type", "clear"}}};
+                TaskManager::get_instance().notify(event);
+            }
+            {
+                // print
+                Event event{type_info(),
+                            LCDManager::static_type_info(),
+                            {{"type", "print"}, {"col", "0"}, {"row", "0"}, {"text", "Wifi disconnected!"}}};
+                TaskManager::get_instance().notify(event);
+            }
             break;
         case WL_NO_SHIELD:
             TaskManager::get_instance().log(this, "No Wifi shield", false);
