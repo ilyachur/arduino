@@ -1,6 +1,7 @@
 #include <ArduinoOTA.h>
 #include <ESPmDNS.h>
 
+#include <encoder.hpp>
 #include <lcd.hpp>
 #include <manager.hpp>
 #include <ota.hpp>
@@ -11,6 +12,50 @@
 #include "utils/private_constants.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();
+
+void testKey(const Encoder::State& flags) {
+    String st;
+    st += String(" left: ");
+    st += flags.left ? String("true") : String("false");
+    st += String(" right: ");
+    st += flags.right ? String("true") : String("false");
+    st += String(" wasHolded: ");
+    st += flags.was_holded ? String("true") : String("false");
+    st += String(" turned: ");
+    st += flags.was_turned ? String("true") : String("false");
+    st += String(" is pressed: ");
+    st += flags.is_pressed ? String("true") : String("false");
+    st += String(" is released: ");
+    st += flags.is_released ? String("true") : String("false");
+    st += String(" is holded: ");
+    st += flags.is_holded ? String("true") : String("false");
+    st += String(" is clicked: ");
+    st += flags.is_clicked ? String("true") : String("false");
+    Serial.println("AAAAAA " + st);
+}
+
+void testS1(const Encoder::State& flags) {
+    String st;
+    st += String(" left: ");
+    st += flags.left ? String("true") : String("false");
+    st += String(" right: ");
+    st += flags.right ? String("true") : String("false");
+    st += String(" wasHolded: ");
+    st += flags.was_holded ? String("true") : String("false");
+    st += String(" turned: ");
+    st += flags.was_turned ? String("true") : String("false");
+    st += String(" is pressed: ");
+    st += flags.is_pressed ? String("true") : String("false");
+    st += String(" is released: ");
+    st += flags.is_released ? String("true") : String("false");
+    st += String(" is holded: ");
+    st += flags.is_holded ? String("true") : String("false");
+    st += String(" is clicked: ");
+    st += flags.is_clicked ? String("true") : String("false");
+    Serial.println("BBBBB " + st);
+}
+
+Encoder encoder(21, 19, 18, testS1, testKey);
 
 class Led : public ScheduledTaskImpl {
 private:
