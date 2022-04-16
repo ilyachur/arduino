@@ -9,9 +9,7 @@
 
 // Handle new receive messages
 void TelegramManager::handle_new_messages(int num_messages) {
-    if (is_debug()) {
-        TaskManager::get_instance().log(this, "Handle new messages " + String(num_messages));
-    }
+    TaskManager::get_instance().log(this, "Handle new messages " + String(num_messages));
     for (int i = 0; i < num_messages; i++) {
         // Chat id of the requester
         String chat_id = String(m_bot.messages[i].chat_id);
@@ -30,21 +28,20 @@ TelegramManager::TelegramManager(const Arguments& args, uint64_t interval, bool 
       m_bot(m_args.m_bot_tocken.c_str(), m_client) {
     m_client.setInsecure();
     set_debug(debug);
+    TaskManager::get_instance().log(this, "Created");
 }
 
 void TelegramManager::process() {
-    TaskManager::get_instance().log(this, m_bot.name);
-    TaskManager::get_instance().log(this, m_bot.userName);
     int num_messages = m_bot.getUpdates(m_bot.last_message_received + 1);
-    TaskManager::get_instance().log(this, String(num_messages));
     while (num_messages) {
-        if (is_debug())
-            TaskManager::get_instance().log(this, "got response");
+        TaskManager::get_instance().log(this, String(num_messages));
+        TaskManager::get_instance().log(this, "got response");
         handle_new_messages(num_messages);
         num_messages = m_bot.getUpdates(m_bot.last_message_received + 1);
     }
 }
 
 void TelegramManager::update(const Event& event) {
+    TaskManager::get_instance().log(this, "got event");
     m_args.m_on_update(m_bot, event);
 }
