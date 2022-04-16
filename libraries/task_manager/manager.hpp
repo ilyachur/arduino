@@ -29,6 +29,7 @@ public:
     static TaskManager& get_instance();
     void register_task(const Task& task);
     void remove_task(const Task& task);
+    void remove_task(const char* type_info);
     void set_debug(bool enable);
     bool is_debug();
     void execute();

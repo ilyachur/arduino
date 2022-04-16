@@ -79,10 +79,10 @@ private:
             return false;
         }
     };
+    uint64_t m_holdTimeout;
     State m_state;
     RotateState m_rotate_state;
     uint64_t m_timer;
-    uint64_t m_holdTimeout;
     std::vector<uint8_t> m_pins;
     PullType m_btn_type;
     encoder_callback m_button_callback;

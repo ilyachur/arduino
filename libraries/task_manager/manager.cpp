@@ -27,6 +27,11 @@ void TaskManager::remove_task(const Task& task) {
         return existed_task == task;
     });
 }
+void TaskManager::remove_task(const char* type_info) {
+    tasks.remove_if([&](Task& existed_task) {
+        return strcmp(existed_task.type_info(), type_info) == 0;
+    });
+}
 void TaskManager::execute() {
     tasks.remove_if([](Task& task) {
         task.execute();

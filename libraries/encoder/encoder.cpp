@@ -71,8 +71,8 @@ Encoder::Encoder(uint8_t s1,
                  const Type& type,
                  const PullType& enc_mode)
     : m_holdTimeout(timeout),
-      m_pins(2),
       m_rotate_state(type),
+      m_pins(2),
       m_encoder_callback(enc_change) {
     m_pins[0] = inverted ? s2 : s1;
     m_pins[1] = inverted ? s1 : s2;
@@ -93,8 +93,8 @@ Encoder::Encoder(uint8_t s1,
                  const PullType& enc_mode,
                  const PullType& btn_mode)
     : m_holdTimeout(timeout),
-      m_pins(3),
       m_rotate_state(type),
+      m_pins(3),
       m_btn_type(btn_mode),
       m_button_callback(enc_button),
       m_encoder_callback(enc_change) {
