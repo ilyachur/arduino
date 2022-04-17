@@ -22,21 +22,26 @@ public:
     }
 
     void render() const {
-        m_impl->render();
+        if (!empty())
+            m_impl->render();
     }
 
     View select() {
-        return m_impl->select();
+        if (!empty())
+            return m_impl->select();
+        return View();
     }
 
     View back() {
-        return m_impl->back();
+        if (!empty())
+            return m_impl->back();
+        return View();
     }
 
     View() = default;
 
-    bool empty() {
-        return m_impl != nullptr;
+    bool empty() const {
+        return m_impl == nullptr;
     }
 
 private:
