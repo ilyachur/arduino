@@ -8,7 +8,7 @@
 #include <telegram.hpp>
 #include <wifi.hpp>
 
-#include "menu/controller.hpp"
+#include "controller.hpp"
 #include "utils/private_constants.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();

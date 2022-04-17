@@ -1,5 +1,8 @@
 #pragma once
+#include <functional>
 #include <memory>
+#include <string>
+#include <utility>
 
 class View {
 public:
@@ -44,9 +47,42 @@ public:
         return m_impl == nullptr;
     }
 
+    void operator++(int) {
+        if (!empty())
+            (*m_impl)++;
+    }
+
+    void operator--(int) {
+        if (!empty())
+            (*m_impl)--;
+    }
+
 private:
     std::shared_ptr<Impl> m_impl;
     View(const std::shared_ptr<Impl>& impl) : m_impl(impl) {
         m_impl->render();
+    }
+};
+
+class MenuItem {
+private:
+    std::string m_title;
+    std::function<View()> m_creator;
+
+public:
+    MenuItem()
+        : m_creator([]() {
+              return View();
+          }) {}
+    MenuItem(const std::string& title) : MenuItem() {
+        m_title = title;
+    }
+    MenuItem(const std::string& title, const std::function<View()>& creator) : m_title(title), m_creator(creator) {}
+
+    const std::string& title() const {
+        return m_title;
+    }
+    View operator()() const {
+        return m_creator();
     }
 };
