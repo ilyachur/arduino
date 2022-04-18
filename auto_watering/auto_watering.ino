@@ -109,10 +109,32 @@ void setup() {
                     String from_name = message.from_name;
                     String welcome = "Welcome, " + from_name + ".\n";
                     welcome += "Use the following commands to control your outputs.\n\n";
+                    welcome += "/status Return status of all available devices\n";
                     welcome += "/led_timeout N Led timeout in ms";
                     Event event{TelegramManager::static_type_info(),
                                 TelegramManager::static_type_info(),
                                 {{"type", "send"}, {"chat_id", message.chat_id.c_str()}, {"message", welcome.c_str()}}};
+                    TaskManager::get_instance().notify(event);
+                } else if (message.text == "/status") {
+                    std::string status_str;
+                    for (const auto& dev : TaskManager::get_instance().get_devices()) {
+                        auto state = dev.status();
+                        status_str += "Device: " + state.name + "\n";
+                        status_str += "    pins: ";
+                        for (const auto& pin : state.used_pins)
+                            status_str += String(pin).c_str() + std::string(" ");
+                        status_str += "\n";
+                        status_str += "    values:\n";
+                        for (const auto& param : state.public_val)
+                            status_str += "        " + param.first + ": " + param.second.first + param.second.second + "\n";
+                        status_str += "    other info:\n";
+                        for (const auto& param : state.info)
+                            status_str += "        " + param.first + ": " + param.second + "\n";
+                        status_str += "\n";
+                    }
+                    Event event{TelegramManager::static_type_info(),
+                                TelegramManager::static_type_info(),
+                                {{"type", "send"}, {"chat_id", message.chat_id.c_str()}, {"message", status_str}}};
                     TaskManager::get_instance().notify(event);
                 } else if (message.text.startsWith("/led_timeout")) {
                     Event event{TelegramManager::static_type_info(),
