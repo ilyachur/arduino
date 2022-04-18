@@ -61,9 +61,3 @@ bool UniqueTaskImpl::execute() {
 bool UniqueTaskImpl::is_finished() {
     return !in_progress;
 }
-
-void DriverServiceImpl::update(const Event& event) {
-    if (event.to.empty() && event.args.size() == 1 && event.args.find("get") != event.args.end() &&
-        event.args.at("get") == "status")
-        TaskManager::get_instance().notify(status());
-}

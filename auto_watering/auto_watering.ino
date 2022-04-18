@@ -6,7 +6,7 @@
 #include <wifi.hpp>
 
 #include "controller.hpp"
-#include "soil_moisture_service.hpp"
+#include "soil_moisture_device.hpp"
 #include "utils/private_constants.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();
@@ -141,7 +141,7 @@ void setup() {
     task_manager.register_task(Task::create<Led>(2, LOW, 5000));
 
     // Register devices
-    task_manager.register_task(Task::create<SoilMoistureService>("dev1", 34, 2610, 820));
+    task_manager.register_task(Task::create<SoilMoistureDevice>("dev1", 34, 2610, 820));
 
     task_manager.log("Ready");
     {

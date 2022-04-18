@@ -24,6 +24,7 @@ private:
 
     std::list<Task> tasks;
     std::list<Task> services;
+    std::list<Task> devices;
     static std::unique_ptr<TaskManager> manager;
 
 public:
@@ -32,12 +33,14 @@ public:
     void remove_task(const Task& task);
     void remove_task(const char* type_info);
     void set_debug(bool enable);
-    bool is_debug();
+    bool is_debug() const;
     void execute();
 
-    void log(String message = "", bool withoutNewLine = false);
-    void log(const Task& task, String message = "", bool withoutNewLine = false);
-    void log(const TaskImpl* task, String message = "", bool withoutNewLine = false);
+    void log(String message = "", bool withoutNewLine = false) const;
+    void log(const Task& task, String message = "", bool withoutNewLine = false) const;
+    void log(const TaskImpl* task, String message = "", bool withoutNewLine = false) const;
     void notify(const Event& event);
+
+    const std::list<Task>& get_devices() const;
 };
 

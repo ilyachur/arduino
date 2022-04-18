@@ -2,6 +2,9 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "event.hpp"
 
@@ -13,6 +16,13 @@
     const char* type_info() const override {     \
         return static_type_info();               \
     }
+
+struct Status {
+    std::vector<uint8_t> used_pins;
+    std::string name;
+    std::unordered_map<std::string, std::pair<std::string, std::string>> public_val;
+    std::unordered_map<std::string, std::string> info;
+};
 
 class TaskImpl {
 protected:
@@ -34,50 +44,65 @@ public:
 
     virtual bool is_debug() const;
     virtual void set_debug(bool enable);
+    virtual Status status() const {
+        return {};
+    }
+    virtual bool is_device() const {
+        return false;
+    }
     virtual bool is_service() const {
         return false;
     }
 };
 
 class Task {
-    std::shared_ptr<TaskImpl> impl;
-    Task(const std::shared_ptr<TaskImpl>& implementation) : impl(implementation) {}
+    std::shared_ptr<TaskImpl> m_impl;
+    Task(const std::shared_ptr<TaskImpl>& implementation) : m_impl(implementation) {}
 
 public:
     bool execute() {
-        return impl->execute();
+        return m_impl->execute();
     }
     bool is_finished() {
-        return impl->is_finished();
+        return m_impl->is_finished();
     }
     bool operator==(const Task& task) {
-        return impl == task.impl;
+        return m_impl == task.m_impl;
     }
 
     void start() {
-        impl->start();
+        m_impl->start();
     }
     void process() {
-        impl->process();
+        m_impl->process();
     }
     void end() {
-        impl->end();
+        m_impl->end();
     }
     const char* type_info() const {
-        return impl->type_info();
-    }
-    bool is_service() const {
-        return impl->is_service();
+        return m_impl->type_info();
     }
 
     bool is_debug() const {
-        return impl->is_debug();
+        return m_impl->is_debug();
     }
     void set_debug(bool enable) {
-        return impl->set_debug(enable);
+        return m_impl->set_debug(enable);
     }
     void update(const Event& event) {
-        impl->update(event);
+        m_impl->update(event);
+    }
+
+    Status status() const {
+        return m_impl->status();
+    }
+
+    bool is_device() const {
+        return m_impl->is_device();
+    }
+
+    bool is_service() const {
+        return m_impl->is_service();
     }
 
     template <class T, class... Args>
@@ -86,9 +111,9 @@ public:
     }
 };
 
-class ServiceTaskImpl : public TaskImpl {
+class Service : public TaskImpl {
 public:
-    ServiceTaskImpl() = default;
+    Service() = default;
     bool is_finished() override {
         return false;
     }
@@ -101,11 +126,15 @@ public:
     }
 };
 
-class DriverServiceImpl : public ServiceTaskImpl {
+class Device : public Service {
 public:
-    DriverServiceImpl() = default;
-    virtual Event status() const = 0;
-    void update(const Event& event) override;
+    Device() = default;
+    bool is_service() const override {
+        return false;
+    }
+    bool is_device() const override {
+        return true;
+    }
 };
 
 /**

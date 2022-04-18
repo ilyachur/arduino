@@ -20,24 +20,17 @@ public:
     void process() override {
         {
             // Ask devices
-            Event event;
-            event.from = "StartMenuUpdater";
-            event.args["get"] = "status";
-            TaskManager::get_instance().notify(event);
+            for (const auto& task : TaskManager::get_instance().get_devices()) {
+                const auto status = task.status();
+                for (const auto& param : status.public_val)
+                    // TODO: scroll menu
+                    m_menu->m_data[status.name /*  + " " + param.first */] = param.second.first + param.second.second;
+            }
         }
         if (m_menu)
             m_menu->render();
     }
     void end() override {}
-
-    void update(const Event& event) override {
-        if (event.args.find("status") != event.args.end() && event.args.find("name") != event.args.end() &&
-            event.args.find("params") != event.args.end()) {
-            // TODO: Split params
-            std::string param = event.args.at("params");
-            m_menu->m_data[event.args.at("name")] = event.args.at(param + "_val") + event.args.at(param + "_type");
-        }
-    }
 };
 
 StartMenu::StartMenu() {

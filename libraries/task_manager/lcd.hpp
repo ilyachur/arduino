@@ -4,7 +4,7 @@
 
 #include "task.hpp"
 
-class LCDManager : public ServiceTaskImpl {
+class LCDManager : public Service {
 private:
     // Create An LCD Object. Signals: [ RS, EN, D4, D5, D6, D7 ]
     LiquidCrystal m_lcd;
