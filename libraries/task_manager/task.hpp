@@ -34,6 +34,9 @@ public:
 
     virtual bool is_debug() const;
     virtual void set_debug(bool enable);
+    virtual bool is_service() const {
+        return false;
+    }
 };
 
 class Task {
@@ -63,6 +66,9 @@ public:
     const char* type_info() const {
         return impl->type_info();
     }
+    bool is_service() const {
+        return impl->is_service();
+    }
 
     bool is_debug() const {
         return impl->is_debug();
@@ -90,6 +96,16 @@ public:
     bool execute() override {
         return false;
     }
+    bool is_service() const override {
+        return true;
+    }
+};
+
+class DriverServiceImpl : public ServiceTaskImpl {
+public:
+    DriverServiceImpl() = default;
+    virtual Event status() const = 0;
+    void update(const Event& event) override;
 };
 
 /**

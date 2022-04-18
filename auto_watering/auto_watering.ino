@@ -1,6 +1,3 @@
-#include <ArduinoOTA.h>
-#include <ESPmDNS.h>
-
 #include <lcd.hpp>
 #include <manager.hpp>
 #include <ota.hpp>
@@ -9,10 +6,11 @@
 #include <wifi.hpp>
 
 #include "controller.hpp"
+#include "soil_moisture_service.hpp"
 #include "utils/private_constants.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();
-MenuController menu_controller({21, 19, 18}, true);
+MenuController menu_controller({35, 32, 33}, true);
 
 class Led : public ScheduledTaskImpl {
 private:
@@ -96,7 +94,7 @@ void setup() {
                                          else if (error == OTA_END_ERROR)
                                              Serial.println("Endk Failed");
                                      }),
-                                 1,
+                                 10000,
                                  task_manager.is_debug()));
 
     // Init telegram bot
@@ -141,6 +139,9 @@ void setup() {
 
     // Control led on the board
     task_manager.register_task(Task::create<Led>(2, LOW, 5000));
+
+    // Register devices
+    task_manager.register_task(Task::create<SoilMoistureService>("dev1", 34, 2610, 820));
 
     task_manager.log("Ready");
     {

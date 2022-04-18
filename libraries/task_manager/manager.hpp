@@ -23,6 +23,7 @@ private:
     Preferences preferences;
 
     std::list<Task> tasks;
+    std::list<Task> services;
     static std::unique_ptr<TaskManager> manager;
 
 public:

@@ -1,6 +1,11 @@
 #pragma once
 
+#include <map>
+#include <string>
+
 #include "view.hpp"
+
+class StartMenuUpdater;
 
 class StartMenu : public View::Impl {
 public:
@@ -14,4 +19,11 @@ public:
     View back() override;
     void operator++(int) override;
     void operator--(int) override;
+
+private:
+    friend StartMenuUpdater;
+    mutable std::map<std::string, std::string> m_data;
+
+    size_t start_pos = 0;
+    size_t current_pos = 0;
 };

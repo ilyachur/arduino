@@ -42,6 +42,5 @@ void TelegramManager::process() {
 }
 
 void TelegramManager::update(const Event& event) {
-    TaskManager::get_instance().log(this, "got event");
     m_args.m_on_update(m_bot, event);
 }

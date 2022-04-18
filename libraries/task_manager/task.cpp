@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#include "manager.hpp"
+
 TaskImpl::TaskImpl() : in_progress(false), last_time(-1), debug(false) {}
 TaskImpl::~TaskImpl() {}
 
@@ -60,3 +62,8 @@ bool UniqueTaskImpl::is_finished() {
     return !in_progress;
 }
 
+void DriverServiceImpl::update(const Event& event) {
+    if (event.to.empty() && event.args.size() == 1 && event.args.find("get") != event.args.end() &&
+        event.args.at("get") == "status")
+        TaskManager::get_instance().notify(status());
+}

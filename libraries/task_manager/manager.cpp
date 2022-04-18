@@ -19,16 +19,25 @@ bool TaskManager::is_debug() {
 }
 
 void TaskManager::register_task(const Task& task) {
-    tasks.emplace_back(task);
+    if (task.is_service())
+        services.emplace_back(task);
+    else
+        tasks.emplace_back(task);
 }
 
 void TaskManager::remove_task(const Task& task) {
     tasks.remove_if([&](Task& existed_task) {
         return existed_task == task;
     });
+    services.remove_if([&](Task& existed_task) {
+        return existed_task == task;
+    });
 }
 void TaskManager::remove_task(const char* type_info) {
     tasks.remove_if([&](Task& existed_task) {
+        return strcmp(existed_task.type_info(), type_info) == 0;
+    });
+    services.remove_if([&](Task& existed_task) {
         return strcmp(existed_task.type_info(), type_info) == 0;
     });
 }
@@ -78,6 +87,10 @@ void TaskManager::log(const TaskImpl* task, String message, bool withoutNewLine)
 
 void TaskManager::notify(const Event& event) {
     for (auto&& task : tasks) {
+        if (event.to.empty() || event.to == task.type_info())
+            task.update(event);
+    }
+    for (auto&& task : services) {
         if (event.to.empty() || event.to == task.type_info())
             task.update(event);
     }
