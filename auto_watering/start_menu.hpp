@@ -2,6 +2,8 @@
 
 #include <map>
 #include <string>
+#include <task.hpp>
+#include <utility>
 
 #include "view.hpp"
 
@@ -21,8 +23,13 @@ public:
     void operator--(int) override;
 
 private:
+    struct TaskParam {
+        size_t m_dev_idx;
+        std::string m_param_name;
+        std::string m_param_val;
+    };
     friend StartMenuUpdater;
-    mutable std::map<std::string, std::string> m_data;
+    mutable std::map<std::string, TaskParam> m_data;
 
     size_t start_pos = 0;
     size_t current_pos = 0;

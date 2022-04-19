@@ -53,6 +53,7 @@ public:
     virtual bool is_service() const {
         return false;
     }
+    virtual void select(const std::string& param) {}
 };
 
 class Task {
@@ -103,6 +104,10 @@ public:
 
     bool is_service() const {
         return m_impl->is_service();
+    }
+
+    void select(const std::string& param) {
+        m_impl->select(param);
     }
 
     template <class T, class... Args>

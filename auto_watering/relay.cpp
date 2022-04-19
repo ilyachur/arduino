@@ -60,3 +60,11 @@ void RelayDevice::update(const Event& event) {
     else
         off(pin);
 }
+
+void RelayDevice::select(const std::string& param) {
+    uint8_t i = static_cast<uint8_t>(String(param.c_str()).toInt());
+    if (m_type)
+        digitalRead(m_pins[i]) == LOW ? on(i) : off(i);
+    else
+        digitalRead(m_pins[i]) == HIGH ? on(i) : off(i);
+}

@@ -18,6 +18,8 @@ public:
     void on() const;
     void on(uint8_t relay_idx) const;
 
+    void select(const std::string& param) override;
+
 private:
     std::string m_name;
     std::vector<uint8_t> m_pins;
