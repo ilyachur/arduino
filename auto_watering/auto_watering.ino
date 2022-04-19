@@ -9,6 +9,7 @@
 #include "relay.hpp"
 #include "soil_moisture_device.hpp"
 #include "utils/private_constants.hpp"
+#include "water_level_device.hpp"
 
 TaskManager& task_manager = TaskManager::get_instance();
 MenuController menu_controller({35, 32, 33}, true);
@@ -186,6 +187,7 @@ void setup() {
     task_manager.register_task(Task::create<SoilMoistureDevice>("dev1", 34, 2610, 820));
     task_manager.register_task(
         Task::create<RelayDevice>("relay", std::vector<uint8_t>{23}, true, task_manager.is_debug()));
+    task_manager.register_task(Task::create<WaterLevelDevice>("W_level", 39, 1500, 2200));
 
     task_manager.log("Ready");
     {
