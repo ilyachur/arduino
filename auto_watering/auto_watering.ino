@@ -6,6 +6,7 @@
 #include <wifi.hpp>
 
 #include "controller.hpp"
+#include "relay.hpp"
 #include "soil_moisture_device.hpp"
 #include "utils/private_constants.hpp"
 
@@ -110,6 +111,8 @@ void setup() {
                     String welcome = "Welcome, " + from_name + ".\n";
                     welcome += "Use the following commands to control your outputs.\n\n";
                     welcome += "/status Return status of all available devices\n";
+                    welcome += "/relay_on [N] Enable relay pin\n";
+                    welcome += "/relay_off [N] Disable relay pin\n";
                     welcome += "/led_timeout N Led timeout in ms";
                     Event event{TelegramManager::static_type_info(),
                                 TelegramManager::static_type_info(),
@@ -124,17 +127,34 @@ void setup() {
                         for (const auto& pin : state.used_pins)
                             status_str += String(pin).c_str() + std::string(" ");
                         status_str += "\n";
-                        status_str += "    values:\n";
-                        for (const auto& param : state.public_val)
-                            status_str += "        " + param.first + ": " + param.second.first + param.second.second + "\n";
-                        status_str += "    other info:\n";
-                        for (const auto& param : state.info)
-                            status_str += "        " + param.first + ": " + param.second + "\n";
+                        if (state.public_val.size()) {
+                            status_str += "    values:\n";
+                            for (const auto& param : state.public_val)
+                                status_str +=
+                                    "        " + param.first + ": " + param.second.first + param.second.second + "\n";
+                        }
+                        if (state.info.size()) {
+                            status_str += "    other info:\n";
+                            for (const auto& param : state.info)
+                                status_str += "        " + param.first + ": " + param.second + "\n";
+                        }
                         status_str += "\n";
                     }
                     Event event{TelegramManager::static_type_info(),
                                 TelegramManager::static_type_info(),
                                 {{"type", "send"}, {"chat_id", message.chat_id.c_str()}, {"message", status_str}}};
+                    TaskManager::get_instance().notify(event);
+                } else if (message.text.startsWith("/relay_on")) {
+                    Event event{
+                        TelegramManager::static_type_info(),
+                        RelayDevice::static_type_info(),
+                        {{"enable", "on"}, {"pin", message.text.substring(message.text.indexOf(" ") + 1).c_str()}}};
+                    TaskManager::get_instance().notify(event);
+                } else if (message.text.startsWith("/relay_off")) {
+                    Event event{
+                        TelegramManager::static_type_info(),
+                        RelayDevice::static_type_info(),
+                        {{"enable", "off"}, {"pin", message.text.substring(message.text.indexOf(" ") + 1).c_str()}}};
                     TaskManager::get_instance().notify(event);
                 } else if (message.text.startsWith("/led_timeout")) {
                     Event event{TelegramManager::static_type_info(),
@@ -164,6 +184,8 @@ void setup() {
 
     // Register devices
     task_manager.register_task(Task::create<SoilMoistureDevice>("dev1", 34, 2610, 820));
+    task_manager.register_task(
+        Task::create<RelayDevice>("relay", std::vector<uint8_t>{23}, true, task_manager.is_debug()));
 
     task_manager.log("Ready");
     {
